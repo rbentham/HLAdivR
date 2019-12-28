@@ -1,0 +1,11 @@
+Package: HLAdivR
+Type: Package
+Title: Calculate diversity scores between HLA class I alleles
+Version: 0.1.0
+Author: Robert Bentham
+Maintainer: Robert Bentham <robert.bentham.11@ucl.ac.uk>
+Description: A collection of functions for calculating diversity between HLA alleles.
+    Different metrics include Grantham, Sandberg and pDist. Based on alligned protein sequences from IMGT, with the possibility of creating your own user defined distance metric.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
