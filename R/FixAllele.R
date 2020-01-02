@@ -1,4 +1,12 @@
-# HLA.names needs to be defined in function of from internal data
+#' Internal function to change HLA allele name to correct format
+#'
+#' Removes leading HLA and addition digits and checks the formatting.
+#' Works for some common alternative HLA formats.
+#'
+#' @param allele HLA allele for genes HLA-A, HLA-B or HLA-C
+#' @return HLA allele in correct format for HLADivR to function
+#' @name GetDistScore
+
 FixAllele <- function(allele){
     # function to get allele in right format
     # 1. remove begining "HLA-"
@@ -14,13 +22,15 @@ FixAllele <- function(allele){
     # 1b remove any remaining '-'
     allele.fix <- gsub('-','',allele.fix)
 
+    HLA.names <- names(aligned_HLA_seq)
+
     # 2. check that first character is now a known HLA
     hla.class <- strsplit(allele.fix,'\\*')[[1]][1]
     if(!hla.class %in% HLA.names) stop('HLA class not recognised')
 
 
     # 4. If no match, might need to specify more information - extend
-    all.allele <- unique(prot.list[[hla.class]]$X1)
+    all.allele <- unique(aligned_HLA_seq[[hla.class]]$X1)
     loc1 <- which(all.allele == allele.fix)
     if(length(loc1) == 0){
         hla.split <- strsplit(allele.fix,':')[[1]]

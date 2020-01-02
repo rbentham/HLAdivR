@@ -5,7 +5,14 @@ Version: 0.1.0
 Author: Robert Bentham
 Maintainer: Robert Bentham <robert.bentham.11@ucl.ac.uk>
 Description: A collection of functions for calculating diversity between HLA alleles.
-    Different metrics include Grantham, Sandberg and pDist. Based on alligned protein sequences from IMGT, with the possibility of creating your own user defined distance metric.
-License: What license is it under?
+    Different metrics include Grantham, Sandberg and pDist. Based on alligned protein sequences from IMGT,
+    with the possibility of creating your own user defined distance metric.
+Depends:
+    R (>= 3.3) 
+Imports:
+    Rphylip,
+    phangorn
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.1.1
