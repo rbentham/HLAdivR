@@ -1,0 +1,203 @@
+---
+title: "Introduction to HLAdivR"
+author: 
+ - name: "Robert Bentham"
+   affiliation: "Cancer Institute, University College London"
+   email: "robert.bentham.11@ucl.ac.uk"
+date: "2020-01-02"
+output: 
+  BiocStyle::html_document:
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to HLAdivR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+abstract: HLAdivR is an R package to calculate HLA diversity utilising different methods.
+package: |
+  HLAdivR 0.1.0
+  Report issues on https://github.com/rbentham/HLAdivR/issues
+bibliography: bibvignette.bib
+---
+# Introduction
+
+HLAdivR exists to enable the examination of HLA diversity in a simple and concise way consisting of three basic functions. `HLA_AlignedSeqGet()` to extract the amino acid sequence of individual HLA alleles, `HLADiversityScore()` to calculate the diversity score between pairs of HLA alleles using different metrics and `GetDistScore()` to use a predefined distance matrix between known HLA alleles to extract a score.
+
+
+```{r, results = "hide",warning = FALSE,message=FALSE}
+library(HLAdivR)
+library(tidyverse)
+```
+
+# HLA_AlignedSeqGet
+
+Using `HLA_AllignedSeqGet()` is simple and only requires the name of the HLA allele in the following format:
+
+```{r}
+HLA_AlignedSeqGet('A*24:74:01')
+```
+
+The output of HLA_AlignedSeqGet gives the sequence aligned to reference alleles where '-' indicate no change from the reference allele and '*' indicates the allele is truncated and '.' indicates an insertion appears in that location in alternate alleles.
+
+The reference sequences are as follows:
+```{r}
+HLA_AlignedSeqGet('A*01:01:01:01')
+HLA_AlignedSeqGet('B*07:02:01:01')
+HLA_AlignedSeqGet('C*01:02:01:01')
+```
+
+Full sequences for any allele can be calculated using the `full=TRUE` option:
+```{r}
+HLA_AlignedSeqGet('A*24:74:01', full = TRUE)
+```
+
+# HLADiversityScore
+
+The diversity score between two alleles of the same class can be calculated as follows:
+```{r}
+HLADiversityScore('A*24:74:01','A*01:178N')
+```
+The default score system is Grantham (@grantham1974amino) with the calculation only taking place on exons 2 and 3. Other scoring symtems exist such as Sandberg (@sandberg2003quantifying), and the simple pdist that uses a binary score of 1 if the amino acids do not match. Phylogenetic methods such as Point Accepted Mutation (PAM) and JTT utilised in the Phylip package are also supported (@retief2000phylogenetic). Note that for this to work the program protdist has to be installed on your computer and a path to it must be supplied.
+
+```{r}
+HLADiversityScore('A*24:74:01','A*01:178N',diversity.measure = 'sandberg')
+HLADiversityScore('A*24:74:01','A*01:178N',diversity.measure = 'pdist')
+
+# test.score1 <- HLADiversityScore('A*24:74:01','A*01:178N',diversity.measure = 'JTT',
+#                  protdist.path = '~/Documents/Programs/phylip-3.695/exe/protdist.app/Contents/MacOS')
+# test.score2
+
+# test.score2 <- HLADiversityScore('A*24:74:01','A*01:178N',diversity.measure = 'PAM',
+#                                protdist.path = '~/Documents/Programs/phylip-3.695/exe/protdist.app/Contents/MacOS')
+# test.score2
+```
+
+# GetDistScore
+
+`GetDistScore()` is a function designed to use a pre-calculated distance matrix between HLA alleles. It is a relatively simple process to create such a matrix using the Grantham distance as an example for 100 randomly chosen HLA-A alleles.
+
+```{r}
+data("aligned_HLA_seq")
+
+all.alleles <- aligned_HLA_seq$A$X1
+all.alleles <- unique(sapply(strsplit(all.alleles,split = ":"),
+                             FUN = function(x) paste(x[1],x[2],sep = ':')))
+
+set.seed(1)
+samp.size <- 100
+all.alleles.samp <- sample(all.alleles,size = samp.size,replace = FALSE)
+
+# Create distance matrix
+grantham.dist <- matrix(0,samp.size,samp.size)
+colnames(grantham.dist) <- all.alleles.samp
+rownames(grantham.dist) <- all.alleles.samp
+for(i in 1:(samp.size)){
+    for(j in 1:(samp.size)){
+        grantham.dist[i,j] <- HLADiversityScore(rownames(grantham.dist)[i],
+                                               colnames(grantham.dist)[j],diversity.measure = 'grantham',
+                                               exons23 = TRUE)
+    }
+}
+```
+
+With the distance matrix created `GetDistScore` can now be used.
+
+```{r}
+GetDistScore('A*02:703', 'A*02:365',dist.mat = grantham.dist)
+```
+
+An alternative distance matrix can be created based on the distances between the HLA-A alleles on an MDS plot based on these grantham scores
+
+```{r}
+grantham.dist2 <- as.dist(grantham.dist)
+
+fit <- cmdscale(grantham.dist2, eig = TRUE, k = 2)
+x <- fit$points[,1]
+y <- fit$points[,2]
+
+MDS.df <- data.frame(MDS1 = x, MDS2 = y,
+                     allele = rownames(fit$points))
+
+library(tidyverse)
+MDS.df <- MDS.df %>%
+    mutate(allele.group = substr(allele,1,4))
+```
+
+Here are the HLA alleles projected onto an MDS plot based on the Grantham distance between them:
+
+```{r, dev='png'}
+ggplot(MDS.df, aes(MDS1, MDS2)) +
+    geom_point(aes(colour = factor(allele.group)))
+```
+
+```{r}
+MDS.dist <- matrix(0,samp.size,samp.size)
+colnames(MDS.dist) <- all.alleles.samp
+rownames(MDS.dist) <- all.alleles.samp
+for(i in 1:(samp.size)){
+    for(j in 1:(samp.size)){
+        MDS.dist[i,j] <- as.numeric(dist(MDS.df[c(which(MDS.df$allele == rownames(MDS.dist)[i]),
+                                                  which(MDS.df$allele == colnames(MDS.dist)[j])), c(1,2)],
+                                         method = 'euclidean'))
+    }
+}
+
+
+GetDistScore('A*02:703', 'A*02:365',dist.mat = MDS.dist)
+GetDistScore('A*02:703', 'A*02:365',dist.mat = grantham.dist)
+```
+
+```{r, dev='png'}
+plot(MDS.dist, grantham.dist)
+abline(0,1, col = 'red')
+```
+
+# Example: Recreating scores in Chowell et al paper
+
+The 2019 paper by Chowell et al. "Evolutionary divergence of HLA class I genotype impacts efficacy of cancer immunotherapy" (@chowell2019evolutionary) calculates HLA diversity using the Grantham method, they construct a score called the meanHED which is the average HLA diversity of HLA-A, B and C in exons 2 and 3. This score can be easily recreated using HLAdivR.
+
+
+```{r}
+data("Chowell_2019_clinical")
+
+chowell.hla <- Chowell_2019_clinical$HLAI_Genotype %>%
+    strsplit(',')
+chowell.hla.df <-Reduce(rbind, chowell.hla) %>%
+    as.data.frame() %>%
+    rename(A1 = V1, A2 =V2, B1 = V3, B2 = V4, C1=V5, C2=V6)
+row.names(chowell.hla.df) <- NULL
+
+# Change names
+allele.change <- function(x){
+    return(paste0(substr(x,1,1),'*', substr(x,2,3),':',substr(x,4,5)))}
+
+chowell.hla.df <- chowell.hla.df %>%
+    mutate_all(allele.change)
+
+HLADiversityScore_v <- Vectorize(HLADiversityScore)
+
+# Calculate A, B and C grantham distance
+chowell.hla.df.upd2 <- chowell.hla.df %>%
+    mutate(A.grantham = HLADiversityScore_v(A1,A2, exons23 = TRUE)) %>%
+    mutate(B.grantham = HLADiversityScore_v(B1,B2, exons23 = TRUE)) %>%
+    mutate(C.grantham = HLADiversityScore_v(C1,C2, exons23 = TRUE)) %>%
+    mutate(meanHED = (A.grantham + B.grantham + C.grantham)/3) %>%
+    mutate(any.homozygous = ifelse(A.grantham == 0, TRUE,
+                                   ifelse(B.grantham == 0, TRUE,
+                                          ifelse(C.grantham == 0, TRUE,
+                                                 FALSE))))
+```
+
+```{r,dev='png'}
+plot(Chowell_2019_clinical$Mean_HED, chowell.hla.df.upd2$meanHED,
+     xlab = 'Chowell calculated HED', ylab = 'HLAdivR calculated HED')
+abline(0,1, col = 'red')
+```
+
+# Session Info {-}
+
+```{r session_info, include=TRUE, echo=TRUE, results='markup'}
+devtools::session_info()
+```
+
+# References {-}
+
