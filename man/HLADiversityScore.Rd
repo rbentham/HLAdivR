@@ -4,8 +4,13 @@
 \alias{HLADiversityScore}
 \title{Method to calculate distance between HLA alleles using different techniques}
 \usage{
-HLADiversityScore(hla.1, hla.2, diversity.measure = "grantham",
-  exons23 = TRUE, protdist.path = NULL)
+HLADiversityScore(
+  hla.1,
+  hla.2,
+  diversity.measure = "grantham",
+  exons23 = TRUE,
+  protdist.path = NULL
+)
 }
 \arguments{
 \item{hla.1}{HLA allele in format A*01:01}

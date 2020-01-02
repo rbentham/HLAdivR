@@ -5,6 +5,9 @@
 \alias{Chowell_2019_clinical}
 \title{Chowell 2019 Clinical data}
 \format{A data frame with 314 rows and 9 columns containg HLA genotypes for patiens and calculated mean Grantham scores}
+\source{
+
+}
 \usage{
 Chowell_2019_clinical
 }
