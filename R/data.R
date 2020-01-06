@@ -34,7 +34,7 @@
 #' Chowell, Diego, et al. "Evolutionary divergence of HLA class I genotype impacts efficacy of cancer immunotherapy." Nature medicine 25.11 (2019): 1715-1720.
 #'
 #' @format A data frame with 314 rows and 9 columns containg HLA genotypes for patiens and calculated mean Grantham scores
-#' @source \url{https://static-content.springer.com/esm/art%3A10.1038%2Fs41591-019-0639-4/MediaObjects/41591_2019_639_MOESM3_ESM.xlsx}
+#' @source \url{https://tinyurl.com/yftjdptb}
 #' @return NA
 "Chowell_2019_clinical"
 

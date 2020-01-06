@@ -6,7 +6,7 @@
 \title{Chowell 2019 Clinical data}
 \format{A data frame with 314 rows and 9 columns containg HLA genotypes for patiens and calculated mean Grantham scores}
 \source{
-
+\url{https://tinyurl.com/yftjdptb}
 }
 \usage{
 Chowell_2019_clinical
