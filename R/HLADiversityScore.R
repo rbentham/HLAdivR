@@ -29,7 +29,9 @@ HLADiversityScore <- function(hla.1, hla.2,
     }
 
     hla.1 <- FixAllele(hla.1)
+    if(is.na(hla.1)) return(NA)
     hla.2 <- FixAllele(hla.2)
+    if(is.na(hla.2)) return(NA)
 
     # Set up score functions
     if(diversity.measure == 'pdist'){

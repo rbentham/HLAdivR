@@ -26,7 +26,9 @@ FixAllele <- function(allele){
 
     # 2. check that first character is now a known HLA
     hla.class <- strsplit(allele.fix,'\\*')[[1]][1]
-    if(!hla.class %in% HLA.names) stop('HLA class not recognised')
+    if(!hla.class %in% HLA.names) {
+        warning('HLA class not recognised')
+        return(NA)}
 
 
     # 4. If no match, might need to specify more information - extend
@@ -41,10 +43,12 @@ FixAllele <- function(allele){
             if(length(hla.grep) > 0){
                 allele.fix <-all.allele[hla.grep[1]]
             }else{
-                stop('Allele given was not matched')
+                warning('Allele given was not matched')
+                return(NA)
             }
         }else{
-            stop(paste('Allele given was not matched (only A,B or C given)'))
+            warning(paste('Allele given was not matched (only A,B or C given)'))
+            return(NA)
         }
     }
     return(allele.fix)
