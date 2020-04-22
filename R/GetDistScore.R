@@ -16,6 +16,9 @@ GetDistScore <- function(hla1,hla2,dist.mat) {
     hla2 <- gsub('HLA-','',hla2)
     a1 <- sapply(hla1, FUN = function(x) which(row.names(dist.mat) == x))
     a2 <- sapply(hla2, FUN = function(x) which(row.names(dist.mat) == x))
-    d1 <- sapply(seq_len(length(a1)), FUN = function(x) dist.mat[a1[[x]],a2[[x]]])
+    d1 <- sapply(seq_len(length(a1)), FUN = function(x) {
+        d1.1 <- dist.mat[a1[[x]], a2[[x]]]
+        ifelse(length(d1.1) > 0, d1.1, NA)
+    })
     return(d1)
 }
