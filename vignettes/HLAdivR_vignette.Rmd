@@ -14,7 +14,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 abstract: HLAdivR is an R package to calculate HLA diversity utilising different methods.
 package: |
-  HLAdivR 0.1.0
+  HLAdivR 1.0.0
   Report issues on https://github.com/rbentham/HLAdivR/issues
 bibliography: bibvignette.bib
 ---
