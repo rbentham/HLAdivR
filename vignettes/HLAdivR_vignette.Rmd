@@ -6,7 +6,7 @@ author:
    email: "robert.bentham.11@ucl.ac.uk"
 date: "2020-01-02"
 output: 
-  BiocStyle::html_document:
+  html_document:
     toc_float: true
 vignette: >
   %\VignetteIndexEntry{Introduction to HLAdivR}
@@ -22,8 +22,12 @@ bibliography: bibvignette.bib
 
 HLAdivR exists to enable the examination of HLA diversity in a simple and concise way consisting of three basic functions. `HLA_AlignedSeqGet()` to extract the amino acid sequence of individual HLA alleles, `HLADiversityScore()` to calculate the diversity score between pairs of HLA alleles using different metrics and `GetDistScore()` to use a predefined distance matrix between known HLA alleles to extract a score.
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-```{r, results = "hide",warning = FALSE,message=FALSE}
+
+```{r, results = "hide", warning = FALSE, message=FALSE}
 library(HLAdivR)
 library(tidyverse)
 ```
