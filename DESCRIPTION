@@ -10,12 +10,12 @@ Description: A collection of functions for calculating diversity between HLA all
 Depends:
     R (>= 3.3) 
 Imports:
-    Rphylip,
     phangorn,
     knitr
 Suggests:
     tidyverse,
-    devtools
+    devtools,
+    Rphylip
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
